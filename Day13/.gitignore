@@ -1,0 +1,12 @@
+node_modules/
+Frontend/node_modules/
+.env
+.env.*
+tokenA.txt
+uploads/
+.DS_Store
+.vscode/
+dist/
+build/
+*.log
+package-lock.json

@@ -1,5 +1,4 @@
 const postModel=require("../models/post.model");
-const userModel=require("../models/user.models");
 const ImageKit=require("@imagekit/nodejs");
 const { toFile } = require("@imagekit/nodejs");
 const jwt=require("jsonwebtoken");
@@ -8,6 +7,21 @@ const imagekit=new ImageKit({
   privateKey:process.env.IMAGEKIT_PRIVATE_KEY,
 });
 async function createPostController(req,res){
+  // console.log(req.body,req.file);
+  // const token=req.cookies.token;
+  // if(!token){
+  //   return res.status(401).json({
+  //     message:"token is not provided"
+  //   });
+  //  }
+  // let decoded;
+  //  try{
+  //   decoded=jwt.verify(token,process.env.JWT_SECRET);
+  //  }catch(err){
+  //   return res.status(401).json({
+  //     message:"Invalid token"
+  //   });
+  //  }
 
   const file=await imagekit.files.upload({
     file:await toFile(Buffer.from(req.file.buffer),'file'),
@@ -28,7 +42,15 @@ async function createPostController(req,res){
 }
 
 async function getPostControllers(req,res){
-
+//   const token=req.cookies.token;
+//  let decoded;
+//  try{
+//    decoded=jwt.verify(token,process.env.JWT_SECRET);
+//  }catch(err){
+//   return res.status(401).json({
+//     message:"Invalid token"
+//   });
+//  }
  const userId=req.user.id;
  const posts=await postModel.find({user:userId})
  res.status(200).json({
@@ -37,8 +59,23 @@ async function getPostControllers(req,res){
  });
 }
 
-async function getPostDetails(req,res){
 
+async function getPostDetails(req,res){
+  // const token=req.cookies.token;
+
+  // if(!token){
+  //   return res.status(401).json({
+  //     message:"UnAuthorized Access"
+  //   });
+  //  }
+  // let decoded;
+  // try{
+  //   decoded=jwt.verify(token,process.env.JWT_SECRET);
+  // }catch(err){
+  //   return res.status(401).json({
+  //     message:"Invalid token"
+  //   });
+  // }
 
   const userId=req.user.id;
   const postId=req.params.postId;
@@ -73,18 +110,6 @@ async function likePostController(req,res){
     });
   }
 
-  const existingLike=await likeModel.findOne({
-    post:postId,
-    user:username
-  });
-
-  if(existingLike){
-    return res.status(200).json({
-      message:"Post already liked",
-      like: existingLike
-    });
-  }
-
   const like =await likeModel.create({
     post:postId,
     user:username
@@ -95,59 +120,11 @@ async function likePostController(req,res){
   });
 }
 
-async function unlikePostController(req,res){
-  const username=req.user.username;
-  const postId=req.params.postId;
-  const isLiked=await likeModel.findOne({
-    post:postId,
-    user:username
-  })
-
-  if(!isLiked){
-    return res.status(400).json({
-      message:"Post is not liked by the user"
-    });
-    
-  }
-
-   await likeModel.findOneAndDelete({
-     _id:isLiked._id
-   })
-
-  return res.status(200).json({
-    message:"Post unliked successfully",
-  });
-}
-
-
-
-
-
-async function getFeedController(req,res){
-  const userId=req.user.id;
-  const currentUser=await userModel.findById(userId).select("username email bio profileImage");
-  const posts=await Promise.all((await postModel.find({}).sort({_id:-1}).populate("user","username email bio profileImage").lean()).map(async(post)=>{
-    const isLiked=await likeModel.findOne({post:post._id,user:req.user.username});
-    post.isLiked=Boolean(isLiked);
-    console.log(`Post ${post._id}: isLiked=${post.isLiked} (user: ${req.user.username})`);
-    return post;
-  }));
-
-  res.status(200).json({
-    message:"posts fetched successfully",
-    currentUser,
-    posts
-  });
-}
-
-
 module.exports=
 {createPostController,
 getPostControllers,
  getPostDetails,
-  likePostController,
-  getFeedController,
-  unlikePostController
+  likePostController
 };
 
 

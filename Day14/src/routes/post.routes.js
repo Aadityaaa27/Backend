@@ -19,10 +19,3 @@ postRouter.get("/details/:postId",identifyUser,PostController.getPostDetails);
 
 //api/posts/like/:postId
 postRouter.post("/like/:postId",identifyUser,PostController.likePostController);
-postRouter.post("/unlike/:postId",identifyUser,PostController.unlikePostController);
-
-
-postRouter.get("/feed",identifyUser,PostController.getFeedController);
-postRouter.post("/feed",identifyUser,PostController.getFeedController);
-
-module.exports=postRouter;

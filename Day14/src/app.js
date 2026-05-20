@@ -1,19 +1,8 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
-const cors = require('cors');
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({
-    credentials: true,
-    origin: (origin, callback) => {
-        const isLocalhost = typeof origin === "string" && /^http:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin);
-        if (!origin || isLocalhost) {
-            return callback(null, true);
-        }
-        return callback(new Error("Not allowed by CORS"));
-    }
-}));
 
 //required routes
 const authRouter = require('./routes/auth.routes');

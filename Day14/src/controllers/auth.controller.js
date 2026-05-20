@@ -103,7 +103,6 @@ async function registerController(req,res){
       res.cookie("token",token);
      res.status(200).json({
       message:"User logged in successfully",
-    token,
       user:{
         email:user.email,
         username: user.username,
@@ -113,28 +112,4 @@ async function registerController(req,res){
      });
 }
 
-
-async function getMeController(req,res){
-  const userId = (req.user && (req.user.id || req.user._id)) || req.userId;
-  if(!userId){
-    return res.status(401).json({ message: "User not authenticated" });
-  }
-
-  const user=await userModel.findById(userId);
-  if(!user){
-    return res.status(404).json({ message: "User not found" });
-  }
-
-  res.status(200).json({
-    email:user.email,
-    username: user.username,
-    bio:user.bio,
-    profileImage:user.profileImage
-  });
-}
-
-
-
-
-
-module.exports={registerController,loginController,getMeController};
+module.exports={registerController,loginController};
